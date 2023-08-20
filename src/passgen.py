@@ -1,5 +1,6 @@
 import sys
 import json
+import pickle
 import secrets
 from argparse import ArgumentParser, Namespace
 
@@ -125,16 +126,29 @@ class ParseArguments:
         return args
 
 if __name__ == "__main__":
-    input_args = ParseArguments().get_args()
+    #for _ in range(100):
+        input_args = ParseArguments().get_args()
 
-    with open("./data/word_list.json", "r") as f:
-        word_list = json.load(f)
+        with open("./data/word_list.pkl", "rb") as f:
+            word_list = pickle.load(f)
 
-    passgen = AcronymPassphraseGenerator(
-        acronym = input_args.acronym.lower(),
-        min_word_len = input_args.min_word_len,
-        separators = input_args.separators,
-        word_list = word_list
-    )
-    passphrase = passgen.generate_passphrase()
-    print(passphrase)
+        #alphabetical_dict = {}
+        #for word in word_list:
+        #    initial = word[0]
+        #    alphabetical_dict[initial] = alphabetical_dict.get(initial, []) + [word]
+        #with open("./data/word_dict.pkl", "wb") as f:
+        #    pickle.dump(alphabetical_dict, f, protocol=pickle.HIGHEST_PROTOCOL)
+        
+
+        #with open('word_list.pkl', 'wb') as f:
+        ## Write the list to the file using pickle.dump()
+        #    pickle.dump(word_list, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+        passgen = AcronymPassphraseGenerator(
+            acronym = input_args.acronym.lower(),
+            min_word_len = input_args.min_word_len,
+            separators = input_args.separators,
+            word_list = word_list
+        )
+        passphrase = passgen.generate_passphrase()
+        print(passphrase)
