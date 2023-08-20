@@ -1,5 +1,4 @@
 import sys
-import json
 import pickle
 import secrets
 from argparse import ArgumentParser, Namespace
@@ -8,52 +7,33 @@ class AcronymPassphraseGenerator:
     """
     
     """
-    def __init__(self, acronym: str, min_word_len: int, separators: list, word_list: list) -> None:
+    def __init__(self, acronym: str, min_word_len: int, separators: list, word_dict: list) -> None:
         """
         
         """
         self.__acronym = acronym
         self.__min_word_len = min_word_len
         self.__separators = separators
-        self.__word_list = word_list
+        self.__word_dict = word_dict
 
-    def __filter_short_words(self) -> list:
+    def __filter_short_words(self, word_list) -> list:
         """
         Filters a list of words by removing words with length less than the specified minimum word length.
 
         Returns: A new list containing only the words with length greater than or equal to the specified minimum word length.
         """
-        return [word for word in self.__word_list if len(word) >= self.__min_word_len]
+        return [word for word in word_list if len(word) >= self.__min_word_len]
     
-    def __generate_alphabetical_dict(self) -> dict:
-        """
-        Generates a dictionary where the keys are the first letters of the words in the input list and the values are lists of words starting with that letter.
-
-        Returns: A dictionary where the keys are the first letters of the words in the input list and the values are lists of words starting with that letter.
-        """
-        alphabetical_dict = {}
-        for word in self.__word_list:
-            initial = word[0]
-            alphabetical_dict[initial] = alphabetical_dict.get(initial, []) + [word]
-        return alphabetical_dict
-
-    def __get_inital_word_map(self) -> dict:
-        """
-        
-        """
-        if self.__min_word_len:
-            self.__word_list = self.__filter_short_words()
-        word_dict = self.__generate_alphabetical_dict()
-        return word_dict
-
     def generate_passphrase(self) -> str:
         """
         
         """
+        if self.__min_word_len:
+            for letter in set(self.__acronym):
+                self.__word_dict[letter] = self.__filter_short_words(self.__word_dict[letter])
         passphrase = ""
-        initial_word_map = self.__get_inital_word_map()
         for index, letter in enumerate(self.__acronym):
-            passphrase += secrets.choice(initial_word_map[letter])
+            passphrase += secrets.choice(self.__word_dict[letter])
             if index < len(self.__acronym) - 1:
                 passphrase += secrets.choice(self.__separators)
         return passphrase
@@ -126,29 +106,16 @@ class ParseArguments:
         return args
 
 if __name__ == "__main__":
-    #for _ in range(100):
-        input_args = ParseArguments().get_args()
+    input_args = ParseArguments().get_args()
 
-        with open("./data/word_list.pkl", "rb") as f:
-            word_list = pickle.load(f)
-
-        #alphabetical_dict = {}
-        #for word in word_list:
-        #    initial = word[0]
-        #    alphabetical_dict[initial] = alphabetical_dict.get(initial, []) + [word]
-        #with open("./data/word_dict.pkl", "wb") as f:
-        #    pickle.dump(alphabetical_dict, f, protocol=pickle.HIGHEST_PROTOCOL)
+    with open("./data/word_dict.pkl", "rb") as f:
+        word_dict = pickle.load(f)
         
-
-        #with open('word_list.pkl', 'wb') as f:
-        ## Write the list to the file using pickle.dump()
-        #    pickle.dump(word_list, f, protocol=pickle.HIGHEST_PROTOCOL)
-
-        passgen = AcronymPassphraseGenerator(
-            acronym = input_args.acronym.lower(),
-            min_word_len = input_args.min_word_len,
-            separators = input_args.separators,
-            word_list = word_list
-        )
-        passphrase = passgen.generate_passphrase()
-        print(passphrase)
+    passgen = AcronymPassphraseGenerator(
+        acronym = input_args.acronym.lower(),
+        min_word_len = input_args.min_word_len,
+        separators = input_args.separators,
+        word_dict = word_dict
+    )
+    passphrase = passgen.generate_passphrase()
+    print(passphrase)
