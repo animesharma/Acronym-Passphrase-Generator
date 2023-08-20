@@ -3,8 +3,6 @@ import json
 import secrets
 from argparse import ArgumentParser, Namespace
 
-from preprocess import filter_short_words, generate_alphabetical_dict
-
 class AcronymPassphraseGenerator:
     """
     
@@ -18,13 +16,33 @@ class AcronymPassphraseGenerator:
         self.__separators = separators
         self.__word_list = word_list
 
+    def __filter_short_words(self) -> list:
+        """
+        Filters a list of words by removing words with length less than the specified minimum word length.
+
+        Returns: A new list containing only the words with length greater than or equal to the specified minimum word length.
+        """
+        return [word for word in self.__word_list if len(word) >= self.__min_word_len]
+    
+    def __generate_alphabetical_dict(self) -> dict:
+        """
+        Generates a dictionary where the keys are the first letters of the words in the input list and the values are lists of words starting with that letter.
+
+        Returns: A dictionary where the keys are the first letters of the words in the input list and the values are lists of words starting with that letter.
+        """
+        alphabetical_dict = {}
+        for word in self.__word_list:
+            initial = word[0]
+            alphabetical_dict[initial] = alphabetical_dict.get(initial, []) + [word]
+        return alphabetical_dict
+
     def __get_inital_word_map(self) -> dict:
+        """
+        
+        """
         if self.__min_word_len:
-            self.__word_list = filter_short_words(
-                                words=self.__word_list, 
-                                min_word_len=self.__min_word_len
-                            )
-        word_dict = generate_alphabetical_dict(words=self.__word_list)
+            self.__word_list = self.__filter_short_words()
+        word_dict = self.__generate_alphabetical_dict()
         return word_dict
 
     def generate_passphrase(self) -> str:
@@ -120,4 +138,3 @@ if __name__ == "__main__":
     )
     passphrase = passgen.generate_passphrase()
     print(passphrase)
-    
