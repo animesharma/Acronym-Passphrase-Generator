@@ -117,6 +117,8 @@ class ParseArguments:
             self.__error_handler(error_msg="Acronym must be between 1 and 10 characters long")
         if not args.acronym.isalpha():
             self.__error_handler(error_msg="Acronyms must use the English alphabet only")
+        if args.min_word_len and not (1 <= args.min_word_len <= 8):
+            self.__error_handler(error_msg="Minimum word length must be between 1 and 8")
         
     def get_args(self) -> argparse.Namespace:
         """
