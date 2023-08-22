@@ -3,25 +3,35 @@ A fast and efficient Python tool to generate a secure passphrase from a user des
 
 ## Usage:
 ```
-usage: Acronym Passphrase Generator [-h] --acronym ACRONYM [--min_word_len MIN_WORD_LEN] [--separators [SEPARATORS ...]] [--case CASE]
+usage: Acronym Passphrase Generator [-h] --acronym ACRONYM [--min_word_len MIN_WORD_LEN] [--separators [SEPARATORS ...]] [--case CASE] [--num_passphrases NUM_PASSPHRASES]
 
 Python program to generate a secure passphrase from a user desired acronym.
 
 options:
   -h, --help            show this help message and exit
   --acronym ACRONYM, -a ACRONYM
-                        Acronym from which passphrase is generated.
+                        Acronym from which passphrase is generated. 
+                        Must be between 1 and 10 characters long.
   --min_word_len MIN_WORD_LEN, -m MIN_WORD_LEN
-                        Minimum length of words used in the passphrase.
+                        Minimum length of words used in the passphrase. 
+                        Must be an integer value between 1 and 8. 
+                        Defaults to 1
   --separators [SEPARATORS ...], -s [SEPARATORS ...]
-                        List of separators to separate words in the passphrase. Defaults to hyphen (-)
-  --case CASE, -c CASE  Specifies the case style to use for the generated passphrase. Supported options include: 
-                        0. kebab-case (default) 
-                        1. PascalCase 
-                        2. Intermittent Capitalization 
-                        3. StIcKy CaPs
+                        List of separators to separate words in the passphrase. 
+                        Can specify one or more values. 
+                        Each value can have one or multiple characters. 
+                        Defaults to hyphen (-)
+  --case CASE, -c CASE  Specifies the case style to use for the generated passphrase. 
+                        Must be an integer value between 0 and 3. 
+                        Supported options include: 
+                        0 -> kebab-case (default)
+                        1 -> PascalCase
+                        2 -> InTermitteNt CapItalIzaTIon
+                        3 -> StIcKy CaPs
   --num_passphrases NUM_PASSPHRASES, -n NUM_PASSPHRASES
-                        The number of passphrases to be generated from the acronym
+                        The number of passphrases to be generated from the acronym. 
+                        Must be an integer value between 1 and 20. 
+                        Defaults to 1
 ```
 
 ## Examples:
