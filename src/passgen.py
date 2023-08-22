@@ -53,7 +53,6 @@ class AcronymPassphraseGenerator:
         elif self.__case == 3:
             return "".join(char.upper() if index % 2 != 0 else char.lower() for index, char in enumerate(word))
             
-
     def generate_passphrase(self) -> str:
         """
         Generates a passphrase based on the given acronym, minimum word length, separators, and word dictionary.
