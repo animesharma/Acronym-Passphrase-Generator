@@ -197,4 +197,5 @@ if __name__ == "__main__":
         word_dict = word_dict
     )
     passphrases = passgen.generate_passphrase()
-    print(passphrases)
+    for passphrase in passphrases:
+        print(passphrase)
