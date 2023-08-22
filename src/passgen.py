@@ -8,7 +8,7 @@ class AcronymPassphraseGenerator:
     """
     A class to generate a passphrase based on an acronym.
     """
-    def __init__(self, acronym: str, min_word_len: int, separators: list, case: int, word_dict: dict) -> None:
+    def __init__(self, acronym: str, min_word_len: int, separators: list, case: int, num_passphrases: int, word_dict: dict) -> None:
         """
         Initializes the AcronymPassphraseGenerator with the given acronym, minimum word length, separators, and word dictionary.
 
@@ -16,13 +16,16 @@ class AcronymPassphraseGenerator:
         - acronym: The acronym to use for generating the passphrase.
         - min_word_len: The minimum length of words to use in the passphrase.
         - separators: A list of separator characters to use between words in the passphrase.
+        - case: The integer ID of the case to use for generating the passphrase. Use --help for more details
+        - num_passphrases: The number of passphrases to generate from the given acronym.
         - word_dict: A dictionary of words to use for generating the passphrase, where the keys are the first letters of the words and the values are lists of words starting with that letter.
         """
         self.__acronym = acronym
         self.__min_word_len = min_word_len
         self.__separators = separators
-        self.__word_dict = word_dict
         self.__case = case
+        self.__num_passphrases = num_passphrases
+        self.__word_dict = word_dict
 
     def __filter_short_words(self, word_list) -> list:
         """
@@ -63,16 +66,18 @@ class AcronymPassphraseGenerator:
             for letter in set(self.__acronym):
                 self.__word_dict[letter] = self.__filter_short_words(self.__word_dict[letter])
         
-        passphrase = []
-        
-        for index, letter in enumerate(self.__acronym):
-            word = secrets.choice(self.__word_dict[letter])
-            word = self.__modify_case(word)
-            passphrase.append(word)
-            if index < len(self.__acronym) - 1:
-                passphrase.append(secrets.choice(self.__separators))
-        
-        return "".join(passphrase)
+        passphrases = []
+        for _ in range(self.__num_passphrases):
+            passphrase = []
+            for index, letter in enumerate(self.__acronym):
+                word = secrets.choice(self.__word_dict[letter])
+                word = self.__modify_case(word)
+                passphrase.append(word)
+                if index < len(self.__acronym) - 1:
+                    passphrase.append(secrets.choice(self.__separators))
+            passphrases.append("".join(passphrase))
+
+        return passphrases
 
 class ParseArguments:
     """
@@ -127,7 +132,15 @@ class ParseArguments:
                     1. PascalCase\n \
                     2. Intermittent Capitalization\n\
                     3. StIcKy CaPs"
-        )  
+        ) 
+        self.__parser.add_argument(
+            "--num_passphrases",
+            "-n",
+            dest="num_passphrases",
+            type=int,
+            default=1,
+            help="The number of passphrases to be generated from the acronym"
+        )
 
 
     def __error_handler(self, error_msg: str) -> None:
@@ -155,6 +168,8 @@ class ParseArguments:
             self.__error_handler(error_msg="Minimum word length must be between 1 and 8")
         if args.case and not (0 <= args.case <= 3):
             self.__error_handler(error_msg="Case Style must be between 0 and 3")
+        if args.num_passphrases and not (1 <= args.num_passphrases <= 20):
+            self.__error_handler("Number of passphrases must be an integer between 1 and 20")
         
     def get_args(self) -> argparse.Namespace:
         """
@@ -178,7 +193,9 @@ if __name__ == "__main__":
         min_word_len = input_args.min_word_len,
         separators = input_args.separators,
         case = input_args.case,
+        num_passphrases = input_args.num_passphrases,
         word_dict = word_dict
     )
-    passphrase = passgen.generate_passphrase()
-    print(passphrase)
+    passphrases = passgen.generate_passphrase()
+    for passphrase in passphrases:
+        print(passphrase)
