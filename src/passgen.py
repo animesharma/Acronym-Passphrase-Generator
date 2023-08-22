@@ -8,7 +8,7 @@ class AcronymPassphraseGenerator:
     """
     A class to generate a passphrase based on an acronym.
     """
-    def __init__(self, acronym: str, min_word_len: int, separators: list, word_dict: dict) -> None:
+    def __init__(self, acronym: str, min_word_len: int, separators: list, case: int, word_dict: dict) -> None:
         """
         Initializes the AcronymPassphraseGenerator with the given acronym, minimum word length, separators, and word dictionary.
 
@@ -22,6 +22,7 @@ class AcronymPassphraseGenerator:
         self.__min_word_len = min_word_len
         self.__separators = separators
         self.__word_dict = word_dict
+        self.__case = case
 
     def __filter_short_words(self, word_list) -> list:
         """
@@ -34,6 +35,24 @@ class AcronymPassphraseGenerator:
         """
         return [word for word in word_list if len(word) >= self.__min_word_len]
     
+    def __modify_case(self, word: str) -> str:
+        """
+        This method takes a word as input and modifies its case based on the value of self.__case
+
+        Input paramters:
+        - word: The input word to be modified.
+
+        Returns: The input word with modified case.
+        """
+        if self.__case == 0:
+            return word
+        elif self.__case == 1:
+            return word.capitalize()
+        elif self.__case == 2:
+            return "".join(char.upper() if secrets.choice([True, False]) else char.lower() for char in word)
+        elif self.__case == 3:
+            return "".join(char.upper() if index % 2 != 0 else char.lower() for index, char in enumerate(word))
+            
     def generate_passphrase(self) -> str:
         """
         Generates a passphrase based on the given acronym, minimum word length, separators, and word dictionary.
@@ -47,7 +66,9 @@ class AcronymPassphraseGenerator:
         passphrase = []
         
         for index, letter in enumerate(self.__acronym):
-            passphrase.append(secrets.choice(self.__word_dict[letter]))
+            word = secrets.choice(self.__word_dict[letter])
+            word = self.__modify_case(word)
+            passphrase.append(word)
             if index < len(self.__acronym) - 1:
                 passphrase.append(secrets.choice(self.__separators))
         
@@ -95,6 +116,19 @@ class ParseArguments:
             default=["-"],
             help="List of separators to separate words in the passphrase. Defaults to hyphen (-)"
         )
+        self.__parser.add_argument(
+            "--case",
+            "-c",
+            dest="case",
+            default=0,
+            type=int,
+            help=f"Specifies the case style to use for the generated passphrase. Supported options include:\n\
+                    0. kebab-case (default)\n\
+                    1. PascalCase\n \
+                    2. Intermittent Capitalization\n\
+                    3. StIcKy CaPs"
+        )  
+
 
     def __error_handler(self, error_msg: str) -> None:
         """
@@ -119,6 +153,8 @@ class ParseArguments:
             self.__error_handler(error_msg="Acronyms must use the English alphabet only")
         if args.min_word_len and not (1 <= args.min_word_len <= 8):
             self.__error_handler(error_msg="Minimum word length must be between 1 and 8")
+        if args.case and not (0 <= args.case <= 3):
+            self.__error_handler(error_msg="Case Style must be between 0 and 3")
         
     def get_args(self) -> argparse.Namespace:
         """
@@ -141,6 +177,7 @@ if __name__ == "__main__":
         acronym = input_args.acronym.lower(),
         min_word_len = input_args.min_word_len,
         separators = input_args.separators,
+        case = input_args.case,
         word_dict = word_dict
     )
     passphrase = passgen.generate_passphrase()
