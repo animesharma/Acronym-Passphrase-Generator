@@ -20,6 +20,8 @@ options:
                         1. PascalCase 
                         2. Intermittent Capitalization 
                         3. StIcKy CaPs
+  --num_passphrases NUM_PASSPHRASES, -n NUM_PASSPHRASES
+                        The number of passphrases to be generated from the acronym
 ```
 
 ## Examples:
@@ -27,11 +29,19 @@ options:
 > python .\src\passgen.py -a "lmao"
 lymphocystosis-mender-amassments-overburningly
 
+> python .\src\passgen.py -a "PILL" -n 3 -c 1
+Preconizer-Ivyflower-Latinizing-Linable
+Purpurigenous-Indifulvin-Larches-Leally
+Polyhalite-Immaterialization-Latinistic-Laundered
+
 > python .\src\passgen.py -a "lmao" -m 8 -s "@", "&"
 limpidly&microprograms@aquarist@overfrugality
 
-> python .\src\passgen.py -a "fubar" -s "12345"
-farcist12345upthrown12345byronist12345autographically12345rhomboid
+> python .\src\passgen.py -a "fubar" -s "&_&" -n 4
+filmgoing&_&unsandalled&_&bullskin&_&accidentary&_&reliquefying
+ferulaceous&_&unobstruent&_&borassus&_&ailuropus&_&rhizotaxis
+forcepslike&_&undecagon&_&betorcin&_&athetosic&_&require
+filmer&_&uncontributed&_&bardiglio&_&ascophorous&_&rickeys
 
 > python .\src\passgen.py -a "lmao" -m 7 -c 2
 LAWBReakEr-MOULiNaGe-ABSorPtioMETRic-oNEbeRRY
