@@ -1,7 +1,6 @@
 import sys
 import pickle
 import secrets
-
 import argparse
 
 class AcronymPassphraseGenerator:
@@ -56,15 +55,14 @@ class AcronymPassphraseGenerator:
         elif self.__case == 3:
             return "".join(char.upper() if index % 2 != 0 else char.lower() for index, char in enumerate(word))
             
-    def generate_passphrase(self) -> str:
+    def generate_passphrase(self) -> list:
         """
-        Generates a passphrase based on the given acronym, minimum word length, separators, and word dictionary.
+        Generates passphrase(s) based on the given acronym, minimum word length, separators, and word dictionary.
 
-        Returns: The generated passphrase.
+        Returns: A list of generated passphrase(s).
         """
-        if self.__min_word_len:
-            for letter in set(self.__acronym):
-                self.__word_dict[letter] = self.__filter_short_words(self.__word_dict[letter])
+        for letter in set(self.__acronym):
+            self.__word_dict[letter] = self.__filter_short_words(self.__word_dict[letter])
         
         passphrases = []
         for _ in range(self.__num_passphrases):
@@ -76,8 +74,10 @@ class AcronymPassphraseGenerator:
                 if index < len(self.__acronym) - 1:
                     passphrase.append(secrets.choice(self.__separators))
             passphrases.append("".join(passphrase))
-
+ 
         return passphrases
+    
+################################################################################
 
 class ParseArguments:
     """
@@ -103,14 +103,18 @@ class ParseArguments:
             dest="acronym",
             type=str,
             required=True,
-            help="Acronym from which passphrase is generated."
+            help=f"Acronym from which passphrase is generated. \
+                    Must be between 1 and 10 characters long."
         )
         self.__parser.add_argument(
             "--min_word_len",
             "-m",
             dest="min_word_len",
             type=int,
-            help="Minimum length of words used in the passphrase."
+            default=1,
+            help=f"Minimum length of words used in the passphrase. \
+                    Must be an integer value between 1 and 8. \
+                    Defaults to 1"
         )
         self.__parser.add_argument(
             "--separators",
@@ -119,7 +123,10 @@ class ParseArguments:
             type=str,
             nargs="*",
             default=["-"],
-            help="List of separators to separate words in the passphrase. Defaults to hyphen (-)"
+            help=f"List of separators to separate words in the passphrase. \
+                    Can specify one or more values. \
+                    Each value can have one or multiple characters. \
+                    Defaults to hyphen (-)"
         )
         self.__parser.add_argument(
             "--case",
@@ -127,11 +134,13 @@ class ParseArguments:
             dest="case",
             default=0,
             type=int,
-            help=f"Specifies the case style to use for the generated passphrase. Supported options include:\n\
-                    0. kebab-case (default)\n\
-                    1. PascalCase\n \
-                    2. Intermittent Capitalization\n\
-                    3. StIcKy CaPs"
+            help=f"Specifies the case style to use for the generated passphrase. \
+                    Must be an integer value between 0 and 3. \
+                    Supported options include: \
+                    0 -> kebab-case (default), \
+                    1 -> PascalCase, \
+                    2 -> InTermitteNt CapItalIzaTIon, \
+                    3 -> StIcKy CaPs"
         ) 
         self.__parser.add_argument(
             "--num_passphrases",
@@ -139,7 +148,9 @@ class ParseArguments:
             dest="num_passphrases",
             type=int,
             default=1,
-            help="The number of passphrases to be generated from the acronym"
+            help=f"The number of passphrases to be generated from the acronym. \
+                    Must be an integer value between 1 and 20. \
+                    Defaults to 1"
         )
 
 
@@ -181,8 +192,9 @@ class ParseArguments:
         self.__validate_args(args)
         return args
 
+################################################################################
 
-if __name__ == "__main__":
+def main() -> None:
     input_args = ParseArguments().get_args()
 
     with open("./data/word_dict.pkl", "rb") as f:
@@ -199,3 +211,8 @@ if __name__ == "__main__":
     passphrases = passgen.generate_passphrase()
     for passphrase in passphrases:
         print(passphrase)
+
+################################################################################
+
+if __name__ == "__main__":
+    main()
