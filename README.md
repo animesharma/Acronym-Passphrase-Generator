@@ -3,7 +3,7 @@ A fast and efficient Python tool to generate a secure passphrase from a user des
 
 ## Usage:
 ```
-Acronym Passphrase Generator [-h] --acronym ACRONYM [--min_word_len MIN_WORD_LEN] [--separators [SEPARATORS ...]]
+usage: Acronym Passphrase Generator [-h] --acronym ACRONYM [--min_word_len MIN_WORD_LEN] [--separators [SEPARATORS ...]] [--case CASE]
 
 Python program to generate a secure passphrase from a user desired acronym.
 
@@ -15,6 +15,11 @@ options:
                         Minimum length of words used in the passphrase.
   --separators [SEPARATORS ...], -s [SEPARATORS ...]
                         List of separators to separate words in the passphrase. Defaults to hyphen (-)
+  --case CASE, -c CASE  Specifies the case style to use for the generated passphrase. Supported options include: 
+                        0. kebab-case (default) 
+                        1. PascalCase 
+                        2. Intermittent Capitalization 
+                        3. StIcKy CaPs
 ```
 
 ## Examples:
@@ -27,6 +32,9 @@ limpidly&microprograms@aquarist@overfrugality
 
 > python .\src\passgen.py -a "fubar" -s "12345"
 farcist12345upthrown12345byronist12345autographically12345rhomboid
+
+> python .\src\passgen.py -a "lmao" -m 7 -c 2
+LAWBReakEr-MOULiNaGe-ABSorPtioMETRic-oNEbeRRY
 ```
 
 ## Acknowledgements:
